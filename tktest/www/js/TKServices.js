@@ -1,4 +1,4 @@
-angular.module('TKServices', [])
+angular.module('TKServicesModule', [])
 .service('TKQuestionsService', function () {
     var service = this;
     var questions = [];
@@ -17,6 +17,6 @@ angular.module('TKServices', [])
     };
     service.questionsLength = function()
     {
-        return questions.length
+        return questions.length;
     }
 })

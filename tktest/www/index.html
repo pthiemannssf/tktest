@@ -24,9 +24,9 @@
     <script src="js/app.js"></script>
     <script src="js/TKServices.js"></script>
   </head>
-  <body ng-app="starter">
+  <body ng-app="starter" ng-controller="starterCtrl">
     <ion-nav-bar class="bar-calm">
-      <ion-nav-back-button>
+      <ion-nav-back-button ng-hide="isState(&apos;test&apos;)">
         
       </ion-nav-back-button>
     </ion-nav-bar>

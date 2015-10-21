@@ -32,7 +32,7 @@ function ($http, ENDPOINT_URL) {
     function getUrl() {
         return ENDPOINT_URL + path;
     }
-    service.all - function (token) {
+    service.all = function (token) {
         return $http.get(getUrl(), {
             params: { access_token: token }
         })

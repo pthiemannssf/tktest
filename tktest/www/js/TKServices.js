@@ -2,11 +2,11 @@ angular.module('TKServicesModule', [])
 .service('TKQuestionsService', function () {
     var service = this;
     var questions = [];
-    service.setQuestions - function(serverQuestions)
+    service.setQuestions = function(serverQuestions)
     {
         questions = serverQuestions;
     };
-    service.getQuestion - function(questionID)
+    service.getQuestion = function(questionID)
     {
         var results = [];
         questions.forEach(function(question){

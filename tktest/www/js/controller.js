@@ -1,8 +1,10 @@
 angular.module('starter.controllers', [])
 
+.run(function ($rootScope, $state, $stateParams) {
+
+})
 .controller('LoginCtrl',['$scope', '$state', 'UserService', '$ionicHistory', '$window', function($scope, $state, UserService, $ionicHistory, $window) {
     $scope.user = {};
-    
     $scope.loginSubmitForm = function(form)
     {
         if(form.$valid)
@@ -131,9 +133,11 @@ function($scope, $state, $ionicHistory, UserService, $window, ServerQuestionServ
     }
     $scope.takeTestButtonTapped = function()
     {
-        if(TKQuestionsService.questionsLength() === 0)
+        
+        if(TKQuestionsService.questionsLength() === 0){
+        console.log("pressed")
         getQuestions();
-    else {
+    }else {
         $state.go('test.detail',{testID:1});
     }
     }

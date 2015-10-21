@@ -58,4 +58,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'RESTConnection', 'TK
     url: '/results',
     tempateUrl: 'templates/results.html'
   });
-});
+})
+.controller('starterCtrl',['$scope','$state','$location',function($scope,$state,$location){
+
+    $scope.isState = function(states){
+      return $state.includes(states);
+    };
+    
+}]);

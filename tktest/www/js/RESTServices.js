@@ -24,7 +24,7 @@ function($http, ENDPOINT_URL) {
         })
     }
     
-}]
+}])
 .service('ServerQuestionService', ['$http', 'ENDPOINT_URL',
 function ($http, ENDPOINT_URL) {
     var service = this,
@@ -38,4 +38,3 @@ function ($http, ENDPOINT_URL) {
         })
     }
 }])
-);

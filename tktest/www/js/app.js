@@ -57,5 +57,5 @@ angular.module('starter', ['ionic', 'starter.controllers', 'RESTConnection', 'TK
   .state('results', {
     url: '/results',
     tempateUrl: 'templates/results.html'
-  })
+  });
 });

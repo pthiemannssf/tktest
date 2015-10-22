@@ -1,19 +1,30 @@
 <ion-view view-title="{{title}}">
+    <ion-nav-buttons side="left">
+        <button class="button" ui-sref='lobby'>
+            Menu
+        </button>
+    </ion-nav-buttons>
         <ion-content class="padding">
-            <div class="card">
-                <div class="item item-divider">
-                    Option A
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="item item-divider">
+                            Option A
+                        </div>
+                        <div class="item item-text-wrap" ng-style="{ 'height' : height}">
+                            {{questionA.Text}}
+                        </div>
+                    </div>
                 </div>
-                <div class="item item-text-wrap">
-                    {{questionA.Text}}
-                </div>
-            </div>
-            <div class="card">
-                <div class="item item-divider">
-                    Option B
-                </div>
-                <div class="item item-text-wrap">
-                    {{questionB.Text}}
+                <div class="col">
+                    <div class="card">
+                        <div class="item item-divider">
+                           Option B
+                        </div>
+                        <div class="item item-text-wrap" ng-style="{ 'height' : height}">
+                            {{questionB.Text}}
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row">

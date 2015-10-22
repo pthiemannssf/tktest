@@ -1,4 +1,8 @@
 <ion-view view-title="login">
+    <ion-nav-bar class="bar-balanced">
+        <ion-nav-back-button>
+        </ion-nav-back-button>
+    </ion-nav-bar>
     <ion-content class="padding">
         <form name="loginForm" novalidate ng-submit="loginSubmitForm(loginForm)">
         <div class="list list-inset">
@@ -9,7 +13,7 @@
                     <input ng-model="user.password" name="password" type="password" placeholder="Password" required>
                 </label>
             </div>
-        <button type="submit" class="button button-block button-positive">
+        <button type="submit" class="button button-block button-calm">
             Login
         </button>
         </form>

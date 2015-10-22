@@ -1,4 +1,8 @@
 <ion-view view-title="Register">
+    <ion-nav-bar class="bar-balanced">
+        <ion-nav-back-button>
+        </ion-nav-back-button>
+    </ion-nav-bar>
     <ion-content class="padding">
         <form name="registerForm" novalidate ng-submit="registerSubmitForm(registerForm)">
         <div class="list">
@@ -21,7 +25,7 @@
                     <input name="repeatPassword" type="password" placeholder="Repeat password" ng-model="repeatPassword.password" required>
                 </label>
                 </div>
-                <button class="button block-block button-positive" type="submit">
+                <button class="button block-block button-calm" type="submit">
                     Sign up
                 </button>
             </form>

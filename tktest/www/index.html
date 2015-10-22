@@ -15,8 +15,10 @@
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
 
+
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
+    <script src="lib/angular-ios9-uiwebview.patch.js"></script>
 
     <!-- your app's js -->
     <script src="js/controller.js"></script>
@@ -24,11 +26,8 @@
     <script src="js/app.js"></script>
     <script src="js/TKServices.js"></script>
   </head>
-  <body ng-app="starter" ng-controller="starterCtrl">
-    <ion-nav-bar class="bar-calm">
-      <ion-nav-back-button ng-hide="isState(&apos;test&apos;)">
-        
-      </ion-nav-back-button>
+  <body ng-app="starter" ng-controller="starterCtrl" onresize="">
+    <ion-nav-bar class="bar-balanced">
     </ion-nav-bar>
     <ion-nav-view></ion-nav-view>
   </body>

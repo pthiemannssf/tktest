@@ -142,8 +142,35 @@ function($scope, $state, $ionicHistory, UserService, $window, ServerQuestionServ
     }
     }
 }])
-.controller('TestCtrl', ['$scope', 'testInfo', '$stateParams', '$state', 
+.controller('TestCtrl', ['$scope', 'testInfo', '$stateParams', '$state',
 function($scope, testInfo, $stateParams, $state) {
+    
+    //var height = Math.round(width/7.7/20)*20
+    $scope.height = 0;
+    $scope.changeHeight = function(){
+        var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+        if(width <= 320){
+            $scope.height = 213;
+        } else if (width <= 373) {
+            $scope.height = 193;
+        } else if (width <= 419) {
+            $scope.height = 173;
+        } else if (width <= 429) {
+            $scope.height = 153;
+        } else if (width <= 522) {
+            $scope.height = 133;
+        } else if (width <= 628) {
+            $scope.height = 113;
+        } else if (width <= 889) {
+            $scope.height = 93;
+        } else {
+            $scope.height = 73;
+        }
+        console.log($scope.height);
+    }
+    $scope.changeHeight();
+    window.onresize = $scope.changeHeight;
+    $scope.height = $scope.height+"px";
     var qNumber = $stateParams.testID;
     $scope.title = "Question #"+qNumber;
     testInfo.forEach(function(infoDict)

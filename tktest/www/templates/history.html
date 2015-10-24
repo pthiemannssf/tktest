@@ -1,0 +1,18 @@
+<ion-view view-title="My Results">
+    <ion-nav-buttons side="left">
+        <button class="button" ui-sref='lobby'>
+            Menu
+        </button>
+    </ion-nav-buttons>
+    <ion-content>
+        <ion-list>
+            <ion-item class="color" ng-repeat="test in tests" ng-click="goToResult(test)">
+                <ion-option-button class="button-assertive icon ion-ios-close" ng-click="deleteTest(test)"></ion-option-button>
+                Test {{$index+1}}
+                <span class="item-note">
+                    {{test.createDate | date:'dd-MMM-yyyy hh:mm a'}}
+                </span>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

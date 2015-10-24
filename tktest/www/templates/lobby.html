@@ -1,6 +1,6 @@
 <ion-view view-title="Menu">
     <ion-nav-buttons side="left">
-        <button class="button" ng-click = "logout()">
+        <button class="button" nav-direction="exit" ng-click = "logout()">
             Logout
         </button>
     </ion-nav-buttons>
@@ -8,7 +8,7 @@
         <button ng-click="takeTestButtonTapped()" class="button button-block button-calm">
             Take Test
         </button>
-        <button class="button button-block button-calm">
+        <button class="button button-block button-calm" ui-sref="history">
             My Results
         </button>
     </ion-content>

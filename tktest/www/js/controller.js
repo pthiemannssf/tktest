@@ -88,8 +88,17 @@ angular.module('starter.controllers', [])
     }
     };
 }])
-.controller('LobbyCtrl',['$scope', '$state', '$ionicHistory', 'UserService', '$window', 'ServerQuestionService', 'TKQuestionsService', 
-function($scope, $state, $ionicHistory, UserService, $window, ServerQuestionService, TKQuestionsService) {
+.controller('LobbyCtrl',['$scope', '$state', '$ionicHistory', 'UserService', '$window', 'ServerQuestionService', 'TKQuestionsService', 'TKAnswersService',
+function($scope, $state, $ionicHistory, UserService, $window, ServerQuestionService, TKQuestionsService, TKAnswersService) {
+    $scope.$on('$ionicView.enter', function() {
+        console.log("reset");
+        TKAnswersService.resetAnswers();
+    })
+    $scope.goToHistory = function() {
+        console.log("wew")
+        $state.go('history')
+        console.log("wow")
+    }
     $scope.logout = function() {
         UserService.logout($window.localStorage.token)
         .then(function(response) {
@@ -141,10 +150,11 @@ function($scope, $state, $ionicHistory, UserService, $window, ServerQuestionServ
         $state.go('test.detail',{testID:1});
     }
     }
+
 }])
-.controller('TestCtrl', ['$scope', 'testInfo', '$stateParams', '$state',
-function($scope, testInfo, $stateParams, $state) {
-    
+.controller('TestCtrl', ['$scope', 'testInfo', '$stateParams', '$state', '$window', 'TKQuestionsService', 'TKAnswersService', 'ServerAnswersService', '$ionicHistory',
+function($scope, testInfo, $stateParams, $state, $window, TKQuestionsService, TKAnswersService, ServerAnswersService, $ionicHistory) {
+    console.log(TKAnswersService.getAnswers())
     //var height = Math.round(width/7.7/20)*20
     $scope.height = 0;
     $scope.changeHeight = function(){
@@ -181,17 +191,156 @@ function($scope, testInfo, $stateParams, $state) {
             $scope.questionB = infoDict;
     });
     $scope.buttonClicked = function (option) {
-        if(option === "A") {
-            console.log("Chose A");
-        }
-        else if (option === "B") {
-            console.log("Chose B");
-        }
+        var category = $scope["question"+option].Style;
+        TKAnswersService.saveAnswer(qNumber, category, option);
+        
         var nextqNumber = Number(qNumber) +1;
         if(nextqNumber>30) {
-            $state.go('results');
+            performRequest();
         }else {
             $state.go('test.detail',{testID:nextqNumber});
         }
+        function performRequest() 
+        {
+            var answersDict = angular.copy(TKAnswersService.getAnswers());
+            answersDict["userID"] = $window.localStorage['userID'];
+            var date = new Date();
+            answersDict["createDate"] = date.toUTCString();
+            console.log(answersDict)
+            ServerAnswersService.create(answersDict, $window.localStorage['token'])
+            .then(function(response) {
+                if (response.status === 200) {
+                    console.log(response.status)
+                    $ionicHistory.nextViewOptions({
+                        disableBack: true
+                    });
+                    console.log("beforeresults")
+                    $state.go('results');
+                    console.log("aftergo")
+                } else {
+                    confirmPrompt();
+                }
+            })
+        }
+        function confirmPrompt()
+        {
+            var response = confirm("The answers could not be saved at this moment, do you want to try again?");
+            if (response == true) {
+                performRequest();
+            } else {
+                $ionicHistory.nextViewOptions({
+                    disableBack: true
+                })
+                $state.go('results');
+            }
+        }
+    }
+}])
+.controller('ResultsCtrl', ['$scope', 'TKAnswersService', '$ionicHistory', '$state',
+function($scope, TKAnswersService, $ionicHistory, $state) {
+    $scope.$on('$ionicView.enter', function() {
+        console.log("inresults")
+        console.log(TKAnswersService.getAnswers())
+
+    })
+    console.log("inresults")
+    $scope.menuButtonTapped = function()
+    {
+        $ionicHistory.nextViewOptions({
+            historyRoot: true,
+            disableBack: true
+        })
+        $state.go('lobby');
+    }
+    var answersInfo = TKAnswersService.getAnswers();
+    $scope.labels = ["Competing", "Collaborating", "Compromising", "Avoiding", "Accommodating"];
+    console.log(answersInfo);
+    function returnPercentage (value)
+    {
+        return (value/12)*100;
+    }
+    $scope.data = [[
+        returnPercentage(answersInfo["competing"]),
+        returnPercentage(answersInfo["collaborating"]),
+        returnPercentage(answersInfo["compromising"]),
+        returnPercentage(answersInfo["avoiding"]),
+        returnPercentage(answersInfo["accommodating"])]];
+    $scope.options = {
+        scaleIntegersOnly: true,
+        animation: false,
+        responsive:true,
+        maintainAspectRatio: false,
+        scaleOverride: true,
+        scaleSteps: 4,
+        scaleStepWidth: 25,
+        scaleStartValue: 0,
+        slaceLabel: "<%=value%)"+"%",
+        tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%=value.toFixed(0) %>"+"%",
+    }
+    $scope.colours = [{
+        fillColor: "rgba(151,187,205,0.2)",
+        strokeColor: "rgba(15,187,25,1)",
+        pointColor: "rgba(15,187,25,1)",
+        pointStrokeColor: "#fff",
+        pointHilightFIll: "#fff",
+        pointHighlightStroke:"rgba(151,187,205,0.8)"
+    }];
+    $scope.myGoBack = function() {
+        $ionicHistory.goBack();
+        console.log("back")
+    }
+}])
+.controller('HistoryCtrl', ['$scope', 'ServerAnswersService', '$window', '$state', 'TKAnswersService', '$ionicListDelegate',
+function($scope, ServerAnswersService, $window, $state, TKAnswersService, $ionicListDelegate) {
+    $scope.tests = [];
+    function performRequest()
+    {
+        ServerAnswersService.all($window.localStorage['userID'],
+        $window.localStorage['token'])
+        .then(function(response) {
+            if (response.status === 200) {
+                $scope.tests = response.data;
+                console.log(response.data);
+            } else {
+                confirmPrompt();
+            }
+        }, function(response) {
+            console.log(response)
+            confirmPrompt();
+        })
+    }
+    performRequest()
+    function confirmPrompt()
+    {
+        var response = confirm("The tests could not be retrieved at the moment, do you want to try again?");
+        if (response == true) {
+            performRequest();
+        }
+    }
+    $scope.goToResult=function(test)
+    {
+        var answers={
+            "competing":test.competing,
+            "collaborating":test.collaborating,
+            "compromising":test.compromising,
+            "avoiding":test.avoiding,
+            "accommodating":test.accommodating
+
+        }
+        TKAnswersService.setAnswers(answers);
+        $state.go('historyDetail')
+        console.log($scope.tests)
+        console.log(answers)
+    }
+    $scope.deleteTest = function(test)
+    {
+        ServerAnswersService.delete(test.id, $window.localStorage['token'])
+        $ionicListDelegate.closeOptionButtons();
+        window.setTimeout(refresh,100);
+        window.setTimeout(refresh,1000);
+    }
+    function refresh() {
+        performRequest()
+        console.log("updated")
     }
 }])

@@ -8,3 +8,7 @@
 .fixed-height {
     height: 93px;
 }
+@keyframes refresh {
+    0% {border-color: #11c1f3;}
+    100% {border-color: #dddddd;}
+}

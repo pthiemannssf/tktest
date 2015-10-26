@@ -70,6 +70,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'RESTConnection', 'TK
     templateUrl: 'templates/historyDetail.html',
     controller: 'ResultsCtrl'
   })
+  .state('profile', {
+    url: '/profile',
+    templateUrl: 'templates/profile.html',
+    controller: 'ProfileCtrl'
+  })
 })
 .controller('starterCtrl',['$scope','$state','$location',function($scope,$state,$location){
 

@@ -43,6 +43,10 @@ angular.module('TKServicesModule', [])
     {
         answerCategories = answers;
     }
+    service.setTestDate = function(testDate)
+    {
+        testDate = testDate
+    }
     service.resetAnswers = function()
     {
         for (var property in answerCategories) {

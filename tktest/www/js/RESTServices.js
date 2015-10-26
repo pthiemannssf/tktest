@@ -23,6 +23,15 @@ function($http, ENDPOINT_URL) {
             }
         })
     }
+    service.get = function(userID, token) {
+        return $http({
+            url: getUrl()+userID,
+            method: "GET",
+            headers: {
+                'Authorization': token
+            }
+        })
+    }
     
 }])
 .service('ServerQuestionService', ['$http', 'ENDPOINT_URL',

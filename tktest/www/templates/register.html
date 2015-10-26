@@ -1,31 +1,31 @@
 <ion-view view-title="Register">
-    <ion-nav-bar class="bar-balanced">
+    <ion-nav-bar class="font bar-balanced">
         <ion-nav-back-button>
         </ion-nav-back-button>
     </ion-nav-bar>
-    <ion-content class="padding">
+    <ion-content class="font padding">
         <form name="registerForm" novalidate ng-submit="registerSubmitForm(registerForm)">
-        <div class="list">
-                <label class="item item-input" ng-class="{ 'has-errors' : registerForm.email.$invalid && registerForm.$submitted}">
+        <div class="font list">
+                <label class="font item item-input" ng-class="font { 'has-errors' : registerForm.email.$invalid && registerForm.$submitted}">
                     <input ng-pattern=".{1,}@[_a-z0-9A-Z]+(\.[a-z0-9A-Z]+)+" name="email" type="email" placeholder="Email" ng-model="user.email" required>
                 </label>
-                <label class="item item-input" ng-class="{ 'has-errors' : registerForm.firstName.$invalid && registerForm.$submitted}">
+                <label class="font item item-input" ng-class="font { 'has-errors' : registerForm.firstName.$invalid && registerForm.$submitted}">
                     <input name="firstName" type="text" placeholder="First Name" ng-model="user.firstName" required>
                 </label>
-                <label class="item item-input" ng-class="{ 'has-errors' : registerForm.lastName.$invalid && registerForm.$submitted}">
+                <label class="font item item-input" ng-class="font { 'has-errors' : registerForm.lastName.$invalid && registerForm.$submitted}">
                     <input name="lastName" type="text" placeholder="Last Name" ng-model="user.lastName" required>
                 </label>
-                <label class="item item-input">
+                <label class="font item item-input">
                     <input name="organization" type="text" placeholder="Company (Optional)" ng-model="user.organization">
                 </label>
-                <label class="item item-input" ng-class="{ 'has-errors' : registerForm.password.$invalid && registerForm.$submitted}">
+                <label class="font item item-input" ng-class="font { 'has-errors' : registerForm.password.$invalid && registerForm.$submitted}">
                     <input name="password" type="password" placeholder="Password" required ng-model="user.password" required>
                 </label>
-                <label class="item item-input" ng-class="{ 'has-errors' : registerForm.repeatPassword.$invalid && registerForm.$submitted}">
+                <label class="font item item-input" ng-class="font { 'has-errors' : registerForm.repeatPassword.$invalid && registerForm.$submitted}">
                     <input name="repeatPassword" type="password" placeholder="Repeat password" ng-model="repeatPassword.password" required>
                 </label>
                 </div>
-                <button class="button block-block button-calm" type="submit">
+                <button class="font button block-block button-calm" type="submit">
                     Sign up
                 </button>
             </form>

@@ -13,12 +13,17 @@ angular.module('starter.controllers', [])
             .then(function(response) {
                 if (response.status === 200) {
                     console.log(response);
+                    console.log(response.data)
                     $window.localStorage["userID"] = response.data.userId;
                     $window.localStorage['token'] = response.data.id;
                     $ionicHistory.nextViewOptions({
                         historyRoot: true,
                         disableBack: true
                     });
+                    UserService.get(window.localStorage["userID"], window.localStorage['token'])
+                    .then(function(response) {
+                    $window.localStorage['name'] = response.data.firstName + " " + response.data.lastName;
+                    })
                     $state.go('lobby');
                 } else {
                     alert("Something went wrong, try again.");
@@ -53,7 +58,7 @@ angular.module('starter.controllers', [])
                 });
                 $state.go('lobby');
             } else {
-                $state.go('landing)');
+                $state.go('landing');
             }
             
         });
@@ -92,6 +97,7 @@ angular.module('starter.controllers', [])
 function($scope, $state, $ionicHistory, UserService, $window, ServerQuestionService, TKQuestionsService, TKAnswersService) {
     $scope.$on('$ionicView.enter', function() {
         console.log("reset");
+        console.log(window.localStorage['name'])
         TKAnswersService.resetAnswers();
     })
     $scope.goToHistory = function() {
@@ -265,20 +271,25 @@ function($scope, TKAnswersService, $ionicHistory, $state) {
         returnPercentage(answersInfo["compromising"]),
         returnPercentage(answersInfo["avoiding"]),
         returnPercentage(answersInfo["accommodating"])]];
+
     $scope.options = {
-        scaleIntegersOnly: true,
-        animation: false,
+        scaleIntegersOnly: false,
+        animation: true,
         responsive:true,
         maintainAspectRatio: false,
         scaleOverride: true,
         scaleSteps: 4,
         scaleStepWidth: 25,
         scaleStartValue: 0,
+        scaleShowGridLines: false,
+        barShowStroke: false,
+        barValueSpacing: 1, 
         slaceLabel: "<%=value%)"+"%",
         tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%=value.toFixed(0) %>"+"%",
     }
+    console.log($scope.data)
     $scope.colours = [{
-        fillColor: "rgba(151,187,205,0.2)",
+        fillColor: "rgba(17,193,243,0.6)",
         strokeColor: "rgba(15,187,25,1)",
         pointColor: "rgba(15,187,25,1)",
         pointStrokeColor: "#fff",
@@ -301,6 +312,7 @@ function($scope, ServerAnswersService, $window, $state, TKAnswersService, $ionic
             if (response.status === 200) {
                 $scope.tests = response.data;
                 console.log(response.data);
+                console.log($scope.tests)
             } else {
                 confirmPrompt();
             }
@@ -309,6 +321,7 @@ function($scope, ServerAnswersService, $window, $state, TKAnswersService, $ionic
             confirmPrompt();
         })
     }
+
     performRequest()
     function confirmPrompt()
     {
@@ -344,3 +357,93 @@ function($scope, ServerAnswersService, $window, $state, TKAnswersService, $ionic
         console.log("updated")
     }
 }])
+.controller('ProfileCtrl', ['$scope', 'UserService', 'ServerAnswersService', '$ionicListDelegate', '$state', '$window',
+function($scope, UserService, ServerAnswersService, $ionicListDelegate, $state, $window) {
+    $scope.$on('$ionicView.enter', function() {
+         UserService.get(window.localStorage["userID"], window.localStorage['token'])
+         .then(function(response) {
+         $window.localStorage['name'] = response.data.firstName + " " + response.data.lastName;
+         })
+     $scope.name = window.localStorage['name'];
+    })
+
+    var tests = ServerAnswersService.all($window.localStorage['userID'], $window.localStorage['token'])
+    .then(function(response) {
+        return response;
+    });
+    tests.then(function(data) {
+        console.log(data.data);
+        $scope.testsTaken = data.data.length
+        var competing = data.data.map(function(item) {
+            return item.competing;
+        });
+        var collaborating = data.data.map(function(item) {
+            return item.collaborating;
+        });
+        var compromising = data.data.map(function(item) {
+            return item.compromising;
+        });
+        var avoiding = data.data.map(function(item) {
+            return item.avoiding;
+        });
+        var accommodating = data.data.map(function(item) {
+            return item.accommodating;
+        });
+        var totalCompeting = competing.reduce(function(a, b) {
+            return a + b;
+        });
+        var totalCollaborating = collaborating.reduce(function(a, b) {
+            return a + b;
+        });
+        var totalCompromising = compromising.reduce(function(a, b) {
+            return a + b;
+        });
+        var totalAvoiding = avoiding.reduce(function(a, b) {
+            return a + b;
+        });
+        var totalAccommodating = accommodating.reduce(function(a, b) {
+            return a + b;
+        });
+        var chartData = {};
+        chartData.competing = Math.round(totalCompeting/data.data.length * 1000) / 1000;
+        chartData.collaborating = Math.round(totalCollaborating/data.data.length * 1000) / 1000;
+        chartData.compromising = Math.round(totalCompromising/data.data.length * 1000) / 1000;
+        chartData.avoiding = Math.round(totalAvoiding/data.data.length * 1000) / 1000;
+        chartData.accommodating = Math.round(totalAccommodating/data.data.length * 1000) / 1000;
+        console.log(chartData);
+        $scope.chartData = [[
+        returnPercentage(chartData["competing"]),
+        returnPercentage(chartData["collaborating"]),
+        returnPercentage(chartData["compromising"]),
+        returnPercentage(chartData["avoiding"]),
+        returnPercentage(chartData["accommodating"])]];
+    });
+    function returnPercentage (value)
+    {
+        return (value/12)*100;
+    }
+    $scope.colours = [{
+        fillColor: "rgba(17,193,243,0.6)",
+        strokeColor: "rgba(15,187,25,1)",
+        pointColor: "rgba(15,187,25,1)",
+        pointStrokeColor: "#fff",
+        pointHilightFIll: "#fff",
+        pointHighlightStroke:"rgba(151,187,205,0.8)"
+    }];
+    $scope.options = {
+        scaleIntegersOnly: false,
+        animation: true,
+        responsive:true,
+        maintainAspectRatio: false,
+        scaleOverride: true,
+        scaleSteps: 4,
+        scaleStepWidth: 25,
+        scaleStartValue: 0,
+        scaleShowGridLines: false,
+        barShowStroke: false,
+        barValueSpacing: 1, 
+        slaceLabel: "<%=value%)"+"%",
+        tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%=value.toFixed(0) %>"+"%",
+    }
+    $scope.labels = ["Competing", "Collaborating", "Compromising", "Avoiding", "Accommodating"];
+}]);

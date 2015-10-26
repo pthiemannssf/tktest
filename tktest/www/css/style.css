@@ -12,3 +12,24 @@
     0% {border-color: #11c1f3;}
     100% {border-color: #dddddd;}
 }
+.green {
+    background-color: #43ba6f;
+}
+.grayText {
+    color: #7d7d7d;
+}
+.font {
+    font-family: "roboto light", "segoe ui light", "sans-serif";
+    font-size: 20px;
+}
+::-webkit-input-placeholder {
+ font-family: "roboto light", "segoe ui light", "sans-serif";
+ font-size: 20px;
+}
+.custom-padding {
+    font-size: 40px;
+}
+.icon-small{
+    font-size: 25px; 
+    position: relative;
+}

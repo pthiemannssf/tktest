@@ -3,7 +3,7 @@ angular.module('starter.controllers', [])
 .run(function ($rootScope, $state, $stateParams) {
 
 })
-.controller('LoginCtrl',['$scope', '$state', 'UserService', '$ionicHistory', '$window', function($scope, $state, UserService, $ionicHistory, $window) {
+.controller('LoginCtrl',['$scope', '$state', 'UserService', '$ionicHistory', '$window', 'SSFAlertsService', function($scope, $state, UserService, $ionicHistory, $window, SSFAlertsService) {
     $scope.user = {};
     $scope.loginSubmitForm = function(form)
     {
@@ -42,7 +42,7 @@ angular.module('starter.controllers', [])
         }
     }
 }])
-.controller('RegisterCtrl',['$scope', '$state', 'UserService', '$ionicHistory', '$window', function($scope, $state, UserService, $ionicHistory, $window) {
+.controller('RegisterCtrl',['$scope', '$state', 'UserService', '$ionicHistory', '$window', 'SSFAlertsService', function($scope, $state, UserService, $ionicHistory, $window, SSFAlertsService) {
     $scope.user = {};
     $scope.repeatPassword = {};
     $scope.loginAfterRegister = function() {
@@ -441,7 +441,7 @@ function($scope, UserService, ServerAnswersService, $ionicListDelegate, $state, 
         scaleStartValue: 0,
         scaleShowGridLines: false,
         barShowStroke: false,
-        barValueSpacing: 1, 
+        barValueSpacing: 1.3, 
         slaceLabel: "<%=value%)"+"%",
         tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%=value.toFixed(0) %>"+"%",
     }

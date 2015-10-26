@@ -19,12 +19,12 @@
     color: #7d7d7d;
 }
 .font {
-    font-family: "roboto light", "segoe ui light", "sans-serif";
+    font-family: "roboto light", "segoe ui light", "helveticaneue-light", "roboto-light", "sans-serif";
     font-size: 20px;
 }
 ::-webkit-input-placeholder {
- font-family: "roboto light", "segoe ui light", "sans-serif";
- font-size: 20px;
+ font-family: "roboto light", "segoe ui light", "helveticaneue-light", "roboto-light" "sans-serif";
+ font-size: 16px;
 }
 .custom-padding {
     font-size: 40px;

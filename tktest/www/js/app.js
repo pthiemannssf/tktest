@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('starter', ['ionic', 'starter.controllers', 'RESTConnection', 'TKServicesModule', 'ngIOS9UIWebViewPatch', 'chart.js', 'SSFAlerts'])
 
-.run(function($ionicPlatform) {
+.run(["$ionicPlatform", "$window", "$state", function($ionicPlatform, $window, $state) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -15,8 +15,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'RESTConnection', 'TK
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
+   
+    if($window.localStorage["userID"]!==undefined)
+    {
+        $ionicHistory.nextViewOptions({
+            historyRoot: true,
+            disableBack: true
+        });
+        $state.go("lobby");
+    }
   });
-})
+}])
 .config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/');
   $stateProvider
@@ -76,6 +85,27 @@ angular.module('starter', ['ionic', 'starter.controllers', 'RESTConnection', 'TK
     controller: 'ProfileCtrl'
   })
 })
+.run(["$rootScope", "$ionicHistory", "$state", "$window", function($rootScope, $ionicHistory, $state, $window) {
+  $rootScope.$on('request:auth', function() {
+    $ionicHistory.nextViewOptions({
+      historyRoot: true,
+      disableBack: true
+    });
+    delete $window.localStorage['token'];
+    delete $window.localStorage['userID'];
+    $state.go('landing');
+  });  
+}])
+.run(["$rootScope", "$ionicLoading", function($rootScope, $ionicLoading) {
+  $rootScope.$on('loading:show', function() {
+    $ionicLoading.show({
+      template: '<ion-spinner></ion-spinner>'
+    });
+  })
+  $rootScope.$on('loading:hide', function() {
+    $ionicLoading.hide();
+  });
+}])
 .controller('starterCtrl',['$scope','$state','$location',function($scope,$state,$location){
 
     $scope.isState = function(states){

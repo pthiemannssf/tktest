@@ -4,12 +4,26 @@
         Menu
         </button>
     </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+        <button class="font button" ng-click="editChange()">
+            Edit
+        </button>
+    </ion-nav-buttons>
     <ion-content class="font padding text-center"> 
-        <span>
-            <h1 class="custom-padding font" ng-mouseenter="edit = true" ng-mouseleave="edit = false">{{ name }}</h1>
+        <h1 class="custom-padding font" ng-hide="edit">{{ firstName }} {{ lastName }}</h1>
+        <span class="list list-inset" ng-show="edit">
+            <label class="item item-input">
+                <input type="text" placeholder="First Name">
+            </label>
+            <label class="item item-input">
+                <input type="text" placeholder="Last Name">
+            </label>
         </span>
         <h4 class="font grayText">{{ testsTaken }} tests taken.</h4>
-        <br><br>
+        <br ng-hide="edit"><br ng-hide="edit">
+        <button class="button button-full button-assertive" ng-click="deleteUser()" ng-show="edit">
+           Delete User
+       </button>
         <h1 class="font">Average Results:</h1>
        <canvas id="bar" class="font chart chart-bar" data="chartData" labels="labels" options="options" height="300" colours="colours"></canvas> 
     </ion-content>

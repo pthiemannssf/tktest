@@ -13,7 +13,7 @@ angular.module('starter.controllers', [])
             .then(function(response) {
                 if (response.status === 200) {
                     console.log(response);
-                    console.log(response.data)
+                    console.log(response.data);
                     $window.localStorage["userID"] = response.data.userId;
                     $window.localStorage['token'] = response.data.id;
                     $ionicHistory.nextViewOptions({
@@ -22,25 +22,26 @@ angular.module('starter.controllers', [])
                     });
                     UserService.get(window.localStorage["userID"], window.localStorage['token'])
                     .then(function(response) {
-                    $window.localStorage['name'] = response.data.firstName + " " + response.data.lastName;
-                    })
+                    $window.localStorage['firstName'] = response.data.firstName;
+                    $window.localStorage['lastName'] = response.data.lastName;
+                    });
                     $state.go('lobby');
                 } else {
-                    alert("Something went wrong, try again.");
+                    SSFAlertsService.showAlert("Error", "Something went wrong, try again.");
                 }
             }, function(response) {
                 if(response.status === 401)
                 {
-                    alert("Incorrect username or password");
+                    SSFAlertsService.showAlert("Error", "Incorrect username or password");
                 }else if(response.data === null) {
-                    alert("The connection with the server was unsuccessful, check your internet connection and try again later.");
+                    SSFAlertsService.showAlert("Errot", "The connection with the server was unsuccessful, check your internet connection and try again later.");
                 }else {
-                    alert("Something went wrong, try again.");
+                    SSFAlertsService.showAlert("Error", "Something went wrong, try again.");
                 }
             }
             );
         }
-    }
+    };
 }])
 .controller('RegisterCtrl',['$scope', '$state', 'UserService', '$ionicHistory', '$window', 'SSFAlertsService', function($scope, $state, UserService, $ionicHistory, $window, SSFAlertsService) {
     $scope.user = {};
@@ -62,7 +63,7 @@ angular.module('starter.controllers', [])
             }
             
         });
-    }
+    };
     $scope.registerSubmitForm = function(form)
     {
         if($scope.user.password == $scope.repeatPassword.password) {
@@ -73,54 +74,59 @@ angular.module('starter.controllers', [])
                 if (response.status === 200) {
                     $scope.loginAfterRegister();
                 } else {
-                    alert("Something went wrong, try again.");
+                    SSFAlertsService.showAlert("Error", "Something went wrong, try again.");
                 }
             }, function(response) {
                 if(response.data === 422) {
-                    alert("That email is already taken");
+                    SSFAlertsService.showAlert("Error", "That email is already taken");
                     
                 } else
                 if(response.data === null) {
-                    alert("The connection with the server was unsuccessful, check your internet connection and try again later.");
+                    SSFAlertsService.showAlert("error", "The connection with the server was unsuccessful, check your internet connection and try again later.");
                 }else {
-                    alert("Something went wrong, try again.");
+                    SSFAlertsService.showAlert("Error", "Something went wrong, try again.");
                 }
             }
             );
         }
     } else {
-        alert("Passwords do not match")
+        SSFAlertsService.showAlert("Error", "Passwords do not match");
     }
     };
 }])
-.controller('LobbyCtrl',['$scope', '$state', '$ionicHistory', 'UserService', '$window', 'ServerQuestionService', 'TKQuestionsService', 'TKAnswersService',
-function($scope, $state, $ionicHistory, UserService, $window, ServerQuestionService, TKQuestionsService, TKAnswersService) {
+.controller('LobbyCtrl',['$scope', '$state', '$ionicHistory', 'UserService', '$window', 'ServerQuestionService', 'TKQuestionsService', 'TKAnswersService', 'SSFAlertsService',
+function($scope, $state, $ionicHistory, UserService, $window, ServerQuestionService, TKQuestionsService, TKAnswersService, SSFAlertsService) {
     $scope.$on('$ionicView.enter', function() {
         console.log("reset");
-        console.log(window.localStorage['name'])
+        console.log(window.localStorage['firstName']);
         TKAnswersService.resetAnswers();
-    })
+        UserService.get(window.localStorage["userID"], window.localStorage['token'])
+         .then(function(response) {
+         $window.localStorage['firstName'] = response.data.firstName;
+         $window.localStorage['lastName'] = response.data.lastName;
+         });
+    });
     $scope.goToHistory = function() {
-        console.log("wew")
-        $state.go('history')
-        console.log("wow")
-    }
+        $state.go('history');
+    };
     $scope.logout = function() {
         UserService.logout($window.localStorage.token)
         .then(function(response) {
             if(response.status === 204)
             {
+                delete $window.localStorage['token'];
+                delete $window.localStorage['userID'];
                 $ionicHistory.nextViewOptions({
                     historyRoot: true,
                     disableBack: true
-                })
+                });
                 $state.go('landing');
                 
             }else {
-                alert("Could not logout at this moment, try again.");
+                SSFAlertsService.showAlert("Error", "Could not logout at this moment, try again.");
             }
-        })
-    }
+        });
+    };
     if(TKQuestionsService.questionsLength() === 0)
         getQuestions();
     
@@ -137,30 +143,31 @@ function($scope, $state, $ionicHistory, UserService, $window, ServerQuestionServ
             }
         }, function(response) {
             confirmPrompt();
-        })
+        });
     }
     function confirmPrompt()
     {
-        var response = confirm("The questions could not be retrieved at this time, do you want to try again?");
+        var response = SSFAlertsService.showConfirm("Error", "The questions could not be retrieved at this time, do you want to try again?");
         if (response == true) {
             getQuestions();
+        } else {
+            
         }
     }
     $scope.takeTestButtonTapped = function()
     {
         
         if(TKQuestionsService.questionsLength() === 0){
-        console.log("pressed")
         getQuestions();
     }else {
         $state.go('test.detail',{testID:1});
     }
-    }
+    };
 
 }])
-.controller('TestCtrl', ['$scope', 'testInfo', '$stateParams', '$state', '$window', 'TKQuestionsService', 'TKAnswersService', 'ServerAnswersService', '$ionicHistory',
-function($scope, testInfo, $stateParams, $state, $window, TKQuestionsService, TKAnswersService, ServerAnswersService, $ionicHistory) {
-    console.log(TKAnswersService.getAnswers())
+.controller('TestCtrl', ['$scope', 'testInfo', '$stateParams', '$state', '$window', 'TKQuestionsService', 'TKAnswersService', 'ServerAnswersService', '$ionicHistory', 'SSFAlertsService',
+function($scope, testInfo, $stateParams, $state, $window, TKQuestionsService, TKAnswersService, ServerAnswersService, $ionicHistory, SSFAlertsService) {
+    console.log(TKAnswersService.getAnswers());
     //var height = Math.round(width/7.7/20)*20
     $scope.height = 0;
     $scope.changeHeight = function(){
@@ -183,7 +190,7 @@ function($scope, testInfo, $stateParams, $state, $window, TKQuestionsService, TK
             $scope.height = 73;
         }
         console.log($scope.height);
-    }
+    };
     $scope.changeHeight();
     window.onresize = $scope.changeHeight;
     $scope.height = $scope.height+"px";
@@ -212,52 +219,48 @@ function($scope, testInfo, $stateParams, $state, $window, TKQuestionsService, TK
             answersDict["userID"] = $window.localStorage['userID'];
             var date = new Date();
             answersDict["createDate"] = date.toUTCString();
-            console.log(answersDict)
+            console.log(answersDict);
             ServerAnswersService.create(answersDict, $window.localStorage['token'])
             .then(function(response) {
                 if (response.status === 200) {
-                    console.log(response.status)
+                    console.log(response.status);
                     $ionicHistory.nextViewOptions({
                         disableBack: true
                     });
-                    console.log("beforeresults")
                     $state.go('results');
-                    console.log("aftergo")
                 } else {
                     confirmPrompt();
                 }
-            })
+            });
         }
         function confirmPrompt()
         {
-            var response = confirm("The answers could not be saved at this moment, do you want to try again?");
+            var response = SSFAlertsService.showConfirm("Error", "The answers could not be saved at this moment, do you want to try again?");
             if (response == true) {
                 performRequest();
             } else {
                 $ionicHistory.nextViewOptions({
                     disableBack: true
-                })
+                });
                 $state.go('results');
             }
         }
-    }
+    };
 }])
 .controller('ResultsCtrl', ['$scope', 'TKAnswersService', '$ionicHistory', '$state',
 function($scope, TKAnswersService, $ionicHistory, $state) {
     $scope.$on('$ionicView.enter', function() {
-        console.log("inresults")
-        console.log(TKAnswersService.getAnswers())
+        console.log(TKAnswersService.getAnswers());
 
-    })
-    console.log("inresults")
+    });
     $scope.menuButtonTapped = function()
     {
         $ionicHistory.nextViewOptions({
             historyRoot: true,
             disableBack: true
-        })
+        });
         $state.go('lobby');
-    }
+    };
     var answersInfo = TKAnswersService.getAnswers();
     $scope.labels = ["Competing", "Collaborating", "Compromising", "Avoiding", "Accommodating"];
     console.log(answersInfo);
@@ -286,8 +289,8 @@ function($scope, TKAnswersService, $ionicHistory, $state) {
         barValueSpacing: 1, 
         slaceLabel: "<%=value%)"+"%",
         tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%=value.toFixed(0) %>"+"%",
-    }
-    console.log($scope.data)
+    };
+    console.log($scope.data);
     $scope.colours = [{
         fillColor: "rgba(17,193,243,0.6)",
         strokeColor: "rgba(15,187,25,1)",
@@ -298,11 +301,10 @@ function($scope, TKAnswersService, $ionicHistory, $state) {
     }];
     $scope.myGoBack = function() {
         $ionicHistory.goBack();
-        console.log("back")
-    }
+    };
 }])
-.controller('HistoryCtrl', ['$scope', 'ServerAnswersService', '$window', '$state', 'TKAnswersService', '$ionicListDelegate',
-function($scope, ServerAnswersService, $window, $state, TKAnswersService, $ionicListDelegate) {
+.controller('HistoryCtrl', ['$scope', 'ServerAnswersService', '$window', '$state', 'TKAnswersService', '$ionicListDelegate', 'SSFAlertsService',
+function($scope, ServerAnswersService, $window, $state, TKAnswersService, $ionicListDelegate, SSFAlertsService) {
     $scope.tests = [];
     function performRequest()
     {
@@ -312,22 +314,24 @@ function($scope, ServerAnswersService, $window, $state, TKAnswersService, $ionic
             if (response.status === 200) {
                 $scope.tests = response.data;
                 console.log(response.data);
-                console.log($scope.tests)
+                console.log($scope.tests);
             } else {
                 confirmPrompt();
             }
         }, function(response) {
-            console.log(response)
+            console.log(response);
             confirmPrompt();
-        })
+        });
     }
 
-    performRequest()
+    performRequest();
     function confirmPrompt()
     {
-        var response = confirm("The tests could not be retrieved at the moment, do you want to try again?");
+        var response = SSFAlertsService.showConfirm("Error", "The tests could not be retrieved at the moment, do you want to try again?");
         if (response == true) {
             performRequest();
+        } else {
+            
         }
     }
     $scope.goToResult=function(test)
@@ -339,33 +343,34 @@ function($scope, ServerAnswersService, $window, $state, TKAnswersService, $ionic
             "avoiding":test.avoiding,
             "accommodating":test.accommodating
 
-        }
+        };
         TKAnswersService.setAnswers(answers);
-        $state.go('historyDetail')
-        console.log($scope.tests)
-        console.log(answers)
-    }
+        $state.go('historyDetail');
+        console.log($scope.tests);
+        console.log(answers);
+    };
     $scope.deleteTest = function(test)
     {
-        ServerAnswersService.delete(test.id, $window.localStorage['token'])
+        ServerAnswersService.delete(test.id, $window.localStorage['token']);
         $ionicListDelegate.closeOptionButtons();
         window.setTimeout(refresh,100);
         window.setTimeout(refresh,1000);
-    }
+    };
     function refresh() {
-        performRequest()
-        console.log("updated")
+        performRequest();
     }
 }])
-.controller('ProfileCtrl', ['$scope', 'UserService', 'ServerAnswersService', '$ionicListDelegate', '$state', '$window',
-function($scope, UserService, ServerAnswersService, $ionicListDelegate, $state, $window) {
-    $scope.$on('$ionicView.enter', function() {
-         UserService.get(window.localStorage["userID"], window.localStorage['token'])
-         .then(function(response) {
-         $window.localStorage['name'] = response.data.firstName + " " + response.data.lastName;
-         })
-     $scope.name = window.localStorage['name'];
-    })
+.controller('ProfileCtrl', ['$scope', 'UserService', 'ServerAnswersService', '$ionicListDelegate', '$state', '$window', 'SSFAlertsService',
+function($scope, UserService, ServerAnswersService, $ionicListDelegate, $state, $window, SSFAlertsService) {
+    $scope.$on('$ionicView.leave', function() {
+        $scope.edit = false;
+    });
+    $scope.firstName = window.localStorage['firstName'];
+    $scope.lastName = window.localStorage['lastName'];
+    $scope.edit = false;
+    $scope.editChange = function() {
+        $scope.edit = !$scope.edit;
+     };
 
     var tests = ServerAnswersService.all($window.localStorage['userID'], $window.localStorage['token'])
     .then(function(response) {
@@ -373,7 +378,7 @@ function($scope, UserService, ServerAnswersService, $ionicListDelegate, $state, 
     });
     tests.then(function(data) {
         console.log(data.data);
-        $scope.testsTaken = data.data.length
+        $scope.testsTaken = data.data.length;
         var competing = data.data.map(function(item) {
             return item.competing;
         });
@@ -444,6 +449,25 @@ function($scope, UserService, ServerAnswersService, $ionicListDelegate, $state, 
         barValueSpacing: 1.3, 
         slaceLabel: "<%=value%)"+"%",
         tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%=value.toFixed(0) %>"+"%",
-    }
+    };
     $scope.labels = ["Competing", "Collaborating", "Compromising", "Avoiding", "Accommodating"];
+    $scope.deleteUser = function() {
+        SSFAlertsService.showConfirm("Confirm", "Do you really want to delete the account for "+window.localStorage['firstName']+" "+window.localStorage['lastName']+"?")
+        .then(function(response) {
+        if (response == true) {
+            UserService.delete(window.localStorage['userID'], window.localStorage['token'])
+            .then(function(response) {
+                if (response.status === 204) {
+                    $state.go('landing');
+                }
+            });
+    } else {
+        
+    }
+    });
+    };
+            
+        
+
+    
 }]);
